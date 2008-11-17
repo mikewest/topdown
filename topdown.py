@@ -6,6 +6,12 @@ if __name__ == "__main__":
     class KnownValues( unittest.TestCase ):
         KnownValues =   [
                             (
+                                '1', Token('NUMBER', '1')
+                            ),
+                            (
+                                'identifier', Token('IDENTIFIER', 'identifier')
+                            ),
+                            (
                                 '1+1',
                                 ( Token('NUMBER', '1'), Token('OPERATOR', '+'), Token('NUMBER', '1' ) )
                             ),
@@ -15,7 +21,10 @@ if __name__ == "__main__":
                             )
                         ]
         def to_str( self, the_tokens ):
-            return ''.join( [ '%s' % ( token ) for token in the_tokens ] )
+            if isinstance( the_tokens, Token ):
+                return '%s' % ( the_tokens )
+            else:
+                return ''.join( [ '%s' % ( token ) for token in the_tokens ] )
         
         def assertEqualTokens( self, a, b ):
             return self.assertEqual( self.to_str( a ), self.to_str( b ) )
@@ -32,6 +41,7 @@ if __name__ == "__main__":
             return self.assertRaises( exception, tokenizer.tokenize )
         
         def testNumberBadExponent( self ):
+            """Tokenizer.tokenize should raise NumberBadExponent"""
             self.assertTokenizingRaises( NumberBadExponent, '1e')
             self.assertTokenizingRaises( NumberBadExponent, '1ex')
             self.assertTokenizingRaises( NumberBadExponent, '1E')
@@ -42,6 +52,7 @@ if __name__ == "__main__":
             self.assertTokenizingRaises( NumberBadExponent, '1.0eX')
         
         def testNumberFollowedByCharacter( self ):
+            """Tokenizer.tokenize should raise NumberFollowedByCharacter"""
             self.assertTokenizingRaises( NumberFollowedByCharacter, '1x')
             self.assertTokenizingRaises( NumberFollowedByCharacter, '9000x097')
             self.assertTokenizingRaises( NumberFollowedByCharacter, '12.34fs')

@@ -93,7 +93,7 @@ class Tokenizer( object ):
 ### Identifier
             elif BEGIN_IDENTIFIER.match( c ):
                 str_buffer = c
-                while ( IDENTIFIER.match( self.__peek() ) ):
+                while ( self.__next_is( IDENTIFIER ) ):
                     str_buffer += self.__next_char()
                 self.__new_token( 'IDENTIFIER', str_buffer )
                 
