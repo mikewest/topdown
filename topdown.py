@@ -6,19 +6,28 @@ if __name__ == "__main__":
     class KnownValues( unittest.TestCase ):
         KnownValues =   [
                             (
-                                '1', Token('NUMBER', '1')
+                                '1', Token( 'NUMBER', '1' )
                             ),
                             (
-                                'identifier', Token('IDENTIFIER', 'identifier')
+                                'identifier', Token( 'IDENTIFIER', 'identifier' )
+                            ),
+                            (
+                                'identifier01', Token( 'IDENTIFIER', 'identifier01' )
+                            ),
+                            (
+                                'ide_ntifi_er01', Token( 'IDENTIFIER', 'ide_ntifi_er01' )
                             ),
                             (
                                 '1+1',
-                                ( Token('NUMBER', '1'), Token('OPERATOR', '+'), Token('NUMBER', '1' ) )
+                                ( Token('NUMBER', '1'), Token( 'OPERATOR', '+' ), Token( 'NUMBER', '1' ) )
                             ),
                             (
                                 ' 1 + 1 ',
-                                ( Token('NUMBER', '1'), Token('OPERATOR', '+'), Token('NUMBER', '1' ) )
-                            )
+                                ( Token('NUMBER', '1'), Token( 'OPERATOR', '+' ), Token( 'NUMBER', '1' ) )
+                            ),
+                            (
+                                'identifier + 1E10', ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                            ),
                         ]
         def to_str( self, the_tokens ):
             if isinstance( the_tokens, Token ):

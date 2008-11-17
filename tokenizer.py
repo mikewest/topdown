@@ -83,21 +83,23 @@ class Tokenizer( object ):
         NUMBER_SEPERATOR    = re.compile("[\.]")
         NUMBER_EXPONENT     = re.compile("[Ee]")
         
+        BEGIN_STRING        = re.compile("['\"]")
+        
 ### Begin processing the string, one character at a time.
         c = self.__next_char()
         while ( c is not None ):
-### Whitespace
+### 1) Whitespace
             if WHITESPACE.match( c ):
                 pass
                 
-### Identifier
+### 2) Identifier
             elif BEGIN_IDENTIFIER.match( c ):
                 str_buffer = c
                 while ( self.__next_is( IDENTIFIER ) ):
                     str_buffer += self.__next_char()
                 self.__new_token( 'IDENTIFIER', str_buffer )
                 
-### Number
+### 3) Number
             elif NUMBER.match( c ):
                 start_index = self.index
                 str_buffer  = c
@@ -131,7 +133,9 @@ class Tokenizer( object ):
                     raise NumberFollowedByCharacter( str_buffer, start_index, self.index )
                 else:
                     self.__new_token( 'NUMBER', str_buffer )
-                
+
+### 4) 
+
 ### Everything Else
             else:
                 self.__new_token( 'OPERATOR', c )
