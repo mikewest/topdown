@@ -6,6 +6,15 @@ if __name__ == "__main__":
     class KnownValues( unittest.TestCase ):
         KnownValues =   [
                             (
+                                '"xx\\\"x"', Token( 'STRING', 'xx\\"x' )
+                            ),
+                            (
+                                '"xx\\\"x"', Token( 'STRING', 'xx\\"x' )
+                            ),
+                            (
+                                '"xxx"', Token( 'STRING', 'xxx' )
+                            ),
+                            (
                                 '1', Token( 'NUMBER', '1' )
                             ),
                             (

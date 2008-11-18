@@ -32,3 +32,18 @@ class NumberFollowedByCharacter( TokenException ):
     def __init__( self, partial_token = '', start_char = 0, end_char = 0 ):
         TokenException.__init__( self, partial_token, start_char, end_char )
         self.message = "You've tried to create a number, but with characters"
+        
+class StringContainsControlCharacters( TokenException ):
+    """Exception raised when a string contains a control character."""
+    def __init__( self, partial_token = '', start_char = 0, end_char = 0 ):
+        TokenException.__init__( self, partial_token, start_char, end_char )
+        self.message = "You've tried to create a string, but included control characters"
+        
+class UnterminatedString( TokenException ):
+    """Exception raised when a string isn't terminated."""
+    def __init__( self, partial_token = '', start_char = 0, end_char = 0 ):
+        TokenException.__init__( self, partial_token, start_char, end_char )
+        self.message = "You've tried to create a string, but didn't terminate it"
+        
+
+

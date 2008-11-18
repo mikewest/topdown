@@ -37,15 +37,24 @@ class Tokenizer( object ):
 #   Helper Methods (private)
 #   
     def __next_char( self ):
-        "Return the next character (or None), and advance the index."
+        """Return the next character (or None), and advance the index."""
         self.index += 1
         if self.index < self.length:
             return self.original[ self.index ]
         else:
             return None
-        
+    
+    def __next_x_chars( self, x = 1 ):
+        """Return the next X characters (or None if there aren't enough), and advance the index."""
+        first   = self.index + 1
+        last    = first + x
+        if last < self.length:
+            return self.original[ first : last ]
+        else:
+            return None
+    
     def __peek( self ):
-        "Return the next character (or None), but don't advance the index."
+        """Return the next character (or None), but don't advance the index."""
         newIndex = self.index + 1
         if newIndex < self.length:
             return self.original[ newIndex ]
@@ -53,7 +62,7 @@ class Tokenizer( object ):
             return None
             
     def __next_is( self, char_type ):
-        "Returns true if the next character is of a certain type (e.g. matches a given regex)"
+        """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
         c = self.__peek()
         if c is not None:
             return char_type.match( c )
@@ -61,10 +70,9 @@ class Tokenizer( object ):
             return False
         
     def __new_token( self, token_type, token_value ):
+        """Create a new token object, and append it to `self.tokens`"""
         self.tokens.append( Token( token_type, token_value ) )
 
-    def __error_token( self, token_type, token_value, error ):
-        self.tokens.append( Token( token_type, token_value, error ) )
 #
 #   Public Methods
 #
@@ -72,6 +80,8 @@ class Tokenizer( object ):
     def tokenize( self ):
 ### "Constants"
         WHITESPACE          = re.compile("\s")
+        SPACE               = re.compile("[ \t]")
+        TERMINATOR          = re.compile("[\n\r]")
         
         CHARACTER           = re.compile("[a-zA-Z]")
         NUMBER              = re.compile("[0-9]")
@@ -89,7 +99,7 @@ class Tokenizer( object ):
         c = self.__next_char()
         while ( c is not None ):
 ### 1) Whitespace
-            if WHITESPACE.match( c ):
+            if SPACE.match( c ):
                 pass
                 
 ### 2) Identifier
@@ -134,8 +144,61 @@ class Tokenizer( object ):
                 else:
                     self.__new_token( 'NUMBER', str_buffer )
 
-### 4) 
-
+### 4) String
+            elif BEGIN_STRING.match( c ):
+                start_index = self.index
+                quote_char  = c
+                str_buffer  = ''
+                ### Will exit this loop only via raising an error,
+                ### or through a `break` when we find a closing quote.
+                while True: 
+                    c = self.__next_char()
+            ### Raise an error?
+                    if ( TERMINATOR.match( c ) ):
+                        raise UnterminatedString( str_buffer, start_index, self.index )
+                    # Need a test here for control characters
+                    # elif [control characters].match( c ) ):
+                    #   raise StringContainsControlCharacters( str_buffer, start_index, self.index )
+                    
+            ### Closing Quote?
+                    if ( c == quote_char ):
+                        self.__new_token( 'STRING', str_buffer )
+                        break
+                    
+            ### Ok, then.
+                    
+                ### Escaped?
+                    if ( c == '\\'):
+                        escapee     = self.__next_char()
+                        if ( escapee is None):
+                            raise UnterminatedString( str_buffer, start_index, self.index )
+                        
+                        ### I wish Python had a `switch` statement.
+                        if ( 'b' == escapee ):
+                            c   = '\b'
+                        elif ( 'f' == escapee ):
+                            c   = '\f'
+                        elif ( 'n' == escapee ):
+                            c   = '\n'
+                        elif ( 'r' == escapee ):
+                            c   = '\r'
+                        elif ( 't' == escapee ):
+                            c   = '\t'
+                        elif ( 'u' == escapee ):
+                            base16 = self.__next_x_chars( 4 )
+                            if ( base16 is None ):
+                                raise UnterminatedString( str_buffer, start_index, self.index )
+                            else:
+                                try:
+                                    c = chr( int( base16, 16 ) )
+                                except ( ValueError, TypeError ):
+                                    raise UnterminatedString( str_buffer, start_index, self.index )
+                        else:
+                            c   += escapee
+                            
+                ### Append, and move on
+                    str_buffer += c
+                    
 ### Everything Else
             else:
                 self.__new_token( 'OPERATOR', c )
