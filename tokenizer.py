@@ -28,8 +28,11 @@ class Tokenizer( object ):
         
         [1]: http://javascript.crockford.com/tdop/tokens.js
     """
-    def __init__( self, string_to_tokenize = '' ):
+    def __init__( self, string_to_tokenize = '', prefix_chars = '-=<>!+*&|/%^', suffix_chars = '=<>&|' ):
         self.original   =   string_to_tokenize
+        self.prefix     =   prefix_chars
+        self.suffix     =   suffix_chars
+        
         self.length     =   len( string_to_tokenize )
         self.index      =   -1
         self.tokens     =   [ ]
@@ -95,6 +98,9 @@ class Tokenizer( object ):
         
         BEGIN_STRING        = re.compile("['\"]")
         
+        PREFIX              = re.compile( "[%s]" % self.prefix )
+        SUFFIX              = re.compile( "[%s]" % self.suffix )
+        
 ### Begin processing the string, one character at a time.
         c = self.__next_char()
         while ( c is not None ):
@@ -154,7 +160,7 @@ class Tokenizer( object ):
                 while True: 
                     c = self.__next_char()
             ### Raise an error?
-                    if ( TERMINATOR.match( c ) ):
+                    if ( c is None or TERMINATOR.match( c ) ):
                         raise UnterminatedString( str_buffer, start_index, self.index )
                     # Need a test here for control characters
                     # elif [control characters].match( c ) ):
@@ -199,6 +205,13 @@ class Tokenizer( object ):
                 ### Append, and move on
                     str_buffer += c
                     
+### 5) Combining prefix/suffix
+            elif PREFIX.match( c ):
+                str_buffer = c
+                while ( self.__next_is( SUFFIX ) ):
+                    str_buffer += self.__next_char()
+                self.__new_token( 'OPERATOR', str_buffer )
+
 ### Everything Else
             else:
                 self.__new_token( 'OPERATOR', c )
