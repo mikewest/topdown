@@ -84,6 +84,17 @@ class TokenList( object ):
             return NotImplemented
         else:
             return not result
+    
+    #
+    #   Conversion
+    #
+    def __str__( self ):
+        str_buffer = ''
+        cur        = 0
+        for token in self.tokens:
+            str_buffer += "%d)  %s\n" % ( cur, token )
+            cur        += 1
+        return str_buffer
         
 class Tokenizer( object ):
     """
@@ -143,11 +154,7 @@ class Tokenizer( object ):
         """Create a new token object, and append it to `self.tokens`"""
         self.tokens.append( Token( token_type, token_value ) )
 
-#
-#   Public Methods
-#
-
-    def tokenize( self ):
+    def __token_generator( self ):
 ### "Constants"
         WHITESPACE          = re.compile("\s")
         SPACE               = re.compile("[ \t]")
@@ -182,7 +189,7 @@ class Tokenizer( object ):
                 str_buffer = c
                 while ( self.__next_char_is( IDENTIFIER ) ):
                     str_buffer += self.__next_char()
-                self.__new_token( 'IDENTIFIER', str_buffer )
+                yield Token( 'IDENTIFIER', str_buffer )
                 
 ### 3) Number
             elif NUMBER.match( c ):
@@ -217,7 +224,7 @@ class Tokenizer( object ):
                 if ( self.__next_char_is( CHARACTER ) ):
                     raise NumberFollowedByCharacter( str_buffer, start_index, self.index )
                 else:
-                    self.__new_token( 'NUMBER', str_buffer )
+                    yield Token( 'NUMBER', str_buffer )
 
 ### 4) String
             elif BEGIN_STRING.match( c ):
@@ -237,7 +244,7 @@ class Tokenizer( object ):
                     
             ### Closing Quote?
                     if ( c == quote_char ):
-                        self.__new_token( 'STRING', str_buffer )
+                        yield Token( 'STRING', str_buffer )
                         break
                     
             ### Ok, then.
@@ -284,12 +291,20 @@ class Tokenizer( object ):
                 str_buffer = c
                 while ( self.__next_char_is( SUFFIX ) ):
                     str_buffer += self.__next_char()
-                self.__new_token( 'OPERATOR', str_buffer )
+                yield Token( 'OPERATOR', str_buffer )
 
 ### Everything Else
             else:
-                self.__new_token( 'OPERATOR', c )
+                yield Token( 'OPERATOR', c )
                 
             c = self.__next_char()
 
+
+#
+#   Public Methods
+#
+
+    def tokenize( self ):
+        for token in self.__token_generator():
+            self.tokens.append( token )
         return TokenList( self.tokens )
