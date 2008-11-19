@@ -96,6 +96,8 @@ class Tokenizer( object ):
         NUMBER_SEPERATOR    = re.compile("[\.]")
         NUMBER_EXPONENT     = re.compile("[Ee]")
         
+        BEGIN_COMMENT       = re.compile("[/]")
+        
         BEGIN_STRING        = re.compile("['\"]")
         
         PREFIX              = re.compile( "[%s]" % self.prefix )
@@ -105,7 +107,7 @@ class Tokenizer( object ):
         c = self.__next_char()
         while ( c is not None ):
 ### 1) Whitespace
-            if SPACE.match( c ):
+            if WHITESPACE.match( c ):
                 pass
                 
 ### 2) Identifier
@@ -204,8 +206,13 @@ class Tokenizer( object ):
                             
                 ### Append, and move on
                     str_buffer += c
-                    
-### 5) Combining prefix/suffix
+
+### 5) One-line Comments (not a token: just throw away)
+            elif BEGIN_COMMENT.match( c ) and self.__next_is( BEGIN_COMMENT ):
+                while c is not None and not TERMINATOR.match( c ):
+                    c = self.__next_char()
+
+### 6) Combining prefix/suffix
             elif PREFIX.match( c ):
                 str_buffer = c
                 while ( self.__next_is( SUFFIX ) ):

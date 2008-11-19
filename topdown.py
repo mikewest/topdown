@@ -50,6 +50,17 @@ if __name__ == "__main__":
                                         'ide_ntifi_er01', Token( 'IDENTIFIER', 'ide_ntifi_er01' )
                                     )
                                 ]
+        CommentKnownValues  =   [
+                                    (
+                                        '//xxx', None
+                                    ),
+                                    (
+                                        '//xxx\n//xxx', None
+                                    ),
+                                    (
+                                        '//xxx\n\n///xxx//xxx', None
+                                    ),
+                                ]
         ComplexKnownValues  =   [
                                     (
                                         '1+1',
@@ -62,11 +73,27 @@ if __name__ == "__main__":
                                     (
                                         'identifier + 1E10',
                                         ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
-                                    )
+                                    ),
+                                    (
+                                        'identifier +// \n 1E10',
+                                        ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                                    ),
+                                    (
+                                        'identifier +//\r\n 1E10',
+                                        ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                                    ),
+                                    (
+                                        '1// this is a comment', Token( 'NUMBER', '1')
+                                    ),
+                                    (
+                                        '1// this is a comment\n1', ( Token( 'NUMBER', '1'), Token( 'NUMBER', '1'), )
+                                    ),
                                 ]
                                 
         def to_str( self, the_tokens ):
-            if isinstance( the_tokens, Token ):
+            if the_tokens is None:
+                return ''
+            elif isinstance( the_tokens, Token ):
                 return '%s' % ( the_tokens )
             else:
                 return ''.join( [ '%s' % ( token ) for token in the_tokens ] )
@@ -101,6 +128,12 @@ if __name__ == "__main__":
         def testTokenizerKnownComplexValues( self ):
             """Tokenizer.tokenize should give known result with known input"""
             for string, tokens in self.ComplexKnownValues:
+                result = Tokenizer( string ).tokenize()
+                self.assertEqualTokens( tokens, result ) 
+        
+        def testTokenizerKnownCommentValues( self ):
+            """Tokenizer.tokenize should give known result with known input"""
+            for string, tokens in self.CommentKnownValues:
                 result = Tokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
     
