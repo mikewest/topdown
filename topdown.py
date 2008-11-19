@@ -1,4 +1,4 @@
-from tokenizer import Token, Tokenizer
+from tokenizer import Token, Tokenizer, TokenList
 from tokenexceptions import *
 import unittest
 
@@ -90,16 +90,8 @@ if __name__ == "__main__":
                                     ),
                                 ]
                                 
-        def to_str( self, the_tokens ):
-            if the_tokens is None:
-                return ''
-            elif isinstance( the_tokens, Token ):
-                return '%s' % ( the_tokens )
-            else:
-                return ''.join( [ '%s' % ( token ) for token in the_tokens ] )
-            
         def assertEqualTokens( self, a, b ):
-            return self.assertEqual( self.to_str( a ), self.to_str( b ) )
+            return self.assertEqual( TokenList( a ), b )
             
         def testTokenizerKnownStringValues( self ):
             """Tokenizer.tokenize should give known result with known input"""

@@ -17,7 +17,74 @@ class Token( object ):
         
     def __str__( self ):
         return "Token: '%s' of type %s" % ( self.value, self.type )
+        
+    def __eq__( self, other ):
+        if isinstance( other, Token ):
+            return self.type == other.type and self.value == other.value
+        else:
+            return NotImplemented
+    
+    def __ne__( self, other ):
+        result = self.__eq__( other )
+        if result is NotImplemented:
+            return NotImplemented
+        else:
+            return not result
 
+class TokenList( object ):
+    def __init__( self, tokens ):
+        self.tokens     = tokens
+        
+        if self.tokens is None:
+            self.tokens = []
+        elif isinstance( self.tokens, Token ):
+            self.tokens = [ self.tokens ]
+        
+        self.current    = -1
+        self.length     = len( self.tokens )
+    
+    def next( self ):
+        self.current += 1
+        return self.__get_token( self.current )
+    
+    def peek( self ):
+        newIndex = self.current + 1
+        return self.__get_token( newIndex )
+
+    #
+    #   Private Helpers
+    #
+    def __get_token( self, x ):
+        if x < self.length:
+            return self.tokens[ x ]
+        else:
+            return None
+    #
+    #   Equality
+    #
+    def __eq__( self, other ):
+        if isinstance( other, TokenList ):
+            if other.length == self.length:
+                a = other.next()
+                b = self.next()
+                while a is not None or b is not None:
+                    if a != b:
+                        return False
+                    a = other.next()
+                    b = self.next()
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+            
+    def __ne__( self, other ):
+        result = self.__eq__( other )
+        if result is NotImplemented:
+            return NotImplemented
+        else:
+            return not result
+        
 class Tokenizer( object ):
     """
         Given a string, Tokenizer provides an interface to iterate through
@@ -39,13 +106,16 @@ class Tokenizer( object ):
 #
 #   Helper Methods (private)
 #   
+    def __get_char( self, x ):
+        if x < self.length:
+            return self.original[ x ]
+        else:
+            return None
+    
     def __next_char( self ):
         """Return the next character (or None), and advance the index."""
         self.index += 1
-        if self.index < self.length:
-            return self.original[ self.index ]
-        else:
-            return None
+        return self.__get_char( self.index )
     
     def __next_x_chars( self, x = 1 ):
         """Return the next X characters (or None if there aren't enough), and advance the index."""
@@ -59,10 +129,7 @@ class Tokenizer( object ):
     def __peek( self ):
         """Return the next character (or None), but don't advance the index."""
         newIndex = self.index + 1
-        if newIndex < self.length:
-            return self.original[ newIndex ]
-        else:
-            return None
+        return self.__get_char( newIndex )
             
     def __next_char_is( self, char_type ):
         """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
@@ -225,4 +292,4 @@ class Tokenizer( object ):
                 
             c = self.__next_char()
 
-        return self.tokens
+        return TokenList( self.tokens )
