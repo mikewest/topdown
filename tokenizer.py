@@ -64,7 +64,7 @@ class Tokenizer( object ):
         else:
             return None
             
-    def __next_is( self, char_type ):
+    def __next_char_is( self, char_type ):
         """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
         c = self.__peek()
         if c is not None:
@@ -113,7 +113,7 @@ class Tokenizer( object ):
 ### 2) Identifier
             elif BEGIN_IDENTIFIER.match( c ):
                 str_buffer = c
-                while ( self.__next_is( IDENTIFIER ) ):
+                while ( self.__next_char_is( IDENTIFIER ) ):
                     str_buffer += self.__next_char()
                 self.__new_token( 'IDENTIFIER', str_buffer )
                 
@@ -123,31 +123,31 @@ class Tokenizer( object ):
                 str_buffer  = c
                 
     ### Look for more digits
-                while ( self.__next_is( NUMBER ) ):
+                while ( self.__next_char_is( NUMBER ) ):
                     str_buffer += self.__next_char()
                 
     ### Look for a decimal fraction
-                if ( self.__next_is( NUMBER_SEPERATOR ) ):
+                if ( self.__next_char_is( NUMBER_SEPERATOR ) ):
                     str_buffer += self.__next_char()
                     
         ### Look for more digits
-                    while ( self.__next_is( NUMBER ) ):
+                    while ( self.__next_char_is( NUMBER ) ):
                         str_buffer += self.__next_char()
                         
     ### Look for an exponent
-                if ( self.__next_is( NUMBER_EXPONENT ) ):
+                if ( self.__next_char_is( NUMBER_EXPONENT ) ):
                     str_buffer += self.__next_char()
         ### Look for a sign
-                    if ( self.__next_is( NUMBER_SIGN ) ):
+                    if ( self.__next_char_is( NUMBER_SIGN ) ):
                         str_buffer += self.__next_char()
         ### If the next thing isn't a number, raise an error
-                    if ( not self.__next_is( NUMBER ) ):
+                    if ( not self.__next_char_is( NUMBER ) ):
                         raise NumberBadExponent( str_buffer, start_index, self.index )
         ### Look for more digits
-                    while ( self.__next_is( NUMBER ) ):
+                    while ( self.__next_char_is( NUMBER ) ):
                         str_buffer += self.__next_char()
     ### We've got a number!  Unless the next character is a character, that is...
-                if ( self.__next_is( CHARACTER ) ):
+                if ( self.__next_char_is( CHARACTER ) ):
                     raise NumberFollowedByCharacter( str_buffer, start_index, self.index )
                 else:
                     self.__new_token( 'NUMBER', str_buffer )
@@ -208,14 +208,14 @@ class Tokenizer( object ):
                     str_buffer += c
 
 ### 5) One-line Comments (not a token: just throw away)
-            elif BEGIN_COMMENT.match( c ) and self.__next_is( BEGIN_COMMENT ):
+            elif BEGIN_COMMENT.match( c ) and self.__next_char_is( BEGIN_COMMENT ):
                 while c is not None and not TERMINATOR.match( c ):
                     c = self.__next_char()
 
 ### 6) Combining prefix/suffix
             elif PREFIX.match( c ):
                 str_buffer = c
-                while ( self.__next_is( SUFFIX ) ):
+                while ( self.__next_char_is( SUFFIX ) ):
                     str_buffer += self.__next_char()
                 self.__new_token( 'OPERATOR', str_buffer )
 
