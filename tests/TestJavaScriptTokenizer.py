@@ -1,3 +1,6 @@
+import sys
+sys.path.append('..')
+
 from tokenizer import Token, TokenList
 from javascripttokenizer import JavaScriptTokenizer
 from tokenexceptions import *

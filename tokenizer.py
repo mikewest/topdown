@@ -112,6 +112,19 @@ class TokenList( object ):
         return str_buffer
 
 class Tokenizer( object ):
+### Generic "Constants" to be overridden in subclasses
+    WHITESPACE          = re.compile("\s")
+    SPACE               = re.compile("[ \t]")
+    TERMINATOR          = re.compile("[\n\r]")
+    BEGIN_STRING        = re.compile("['\"]")
+    CHARACTER           = re.compile("[a-zA-Z]")
+    NUMBER              = re.compile("[0-9]")
+    NUMBER_SIGN         = re.compile("[-+]")
+    IDENTIFIER          = re.compile("[a-zA-Z0-9_]")
+    NUMBER_SEPERATOR    = re.compile("[\.]")
+    NUMBER_EXPONENT     = re.compile("[Ee]")
+    BEGIN_COMMENT       = re.compile("[/]")
+    
     def __init__( self, string_to_tokenize = ''):
         self.original   =   string_to_tokenize
         self.length     =   len( string_to_tokenize )
@@ -127,6 +140,10 @@ class Tokenizer( object ):
         else:
             return None
     
+    def cur_char( self ):
+        """Return the current character (or None)."""
+        return self.get_char( self.index )
+        
     def next_char( self ):
         """Return the next character (or None), and advance the index."""
         self.index += 1
@@ -165,3 +182,101 @@ class Tokenizer( object ):
         for token in self.token_generator():
             self.tokens.append( token )
         return self.tokens
+        
+#
+#   Generic Tokens
+#
+    def process_literal_string( self ):
+        """Process a 'generic' string, either raising an error or retuning a string Token"""
+        c           = self.cur_char()
+        start_index = self.index
+        quote_char  = c
+        str_buffer  = ''
+        ### Will exit this loop only via raising an error,
+        ### or through a `break` when we find a closing quote.
+        while True: 
+            c = self.next_char()
+    ### Raise an error?
+            if ( c is None or self.TERMINATOR.match( c ) ):
+                raise UnterminatedString( str_buffer, start_index, self.index )
+            # Need a test here for control characters
+            # elif [control characters].match( c ) ):
+            #   raise StringContainsControlCharacters( str_buffer, start_index, self.index )
+            
+    ### Closing Quote?
+            if ( c == quote_char ):
+                return Token( 'STRING', str_buffer )
+                break
+            
+    ### Ok, then.
+            
+        ### Escaped?
+            if ( c == '\\'):
+                escapee     = self.next_char()
+                if ( escapee is None):
+                    raise UnterminatedString( str_buffer, start_index, self.index )
+                
+                ### I wish Python had a `switch` statement.
+                if ( 'b' == escapee ):
+                    c   = '\b'
+                elif ( 'f' == escapee ):
+                    c   = '\f'
+                elif ( 'n' == escapee ):
+                    c   = '\n'
+                elif ( 'r' == escapee ):
+                    c   = '\r'
+                elif ( 't' == escapee ):
+                    c   = '\t'
+                elif ( 'u' == escapee ):
+                    base16 = self.next_x_chars( 4 )
+                    if ( base16 is None ):
+                        raise UnterminatedString( str_buffer, start_index, self.index )
+                    else:
+                        try:
+                            c = chr( int( base16, 16 ) )
+                        except ( ValueError, TypeError ):
+                            raise UnterminatedString( str_buffer, start_index, self.index )
+                else:
+                    c   += escapee
+                    
+        ### Append, and move on
+            str_buffer += c
+            
+    def process_literal_number( self ):
+        """Process a 'generic' number, either raising an error, or returning a number Token"""
+        c           = self.cur_char()
+        start_index = self.index
+        str_buffer  = c
+
+        while ( self.next_char_is( self.NUMBER ) ):
+            str_buffer += self.next_char()
+        
+        if ( self.next_char_is( self.NUMBER_SEPERATOR ) ):
+            str_buffer += self.next_char()
+            
+            while ( self.next_char_is( self.NUMBER ) ):
+                str_buffer += self.next_char()
+                
+        if ( self.next_char_is( self.NUMBER_EXPONENT ) ):
+            str_buffer += self.next_char()
+            if ( self.next_char_is( self.NUMBER_SIGN ) ):
+                str_buffer += self.next_char()
+
+            if ( not self.next_char_is( self.NUMBER ) ):
+                raise NumberBadExponent( str_buffer, start_index, self.index )
+
+            while ( self.next_char_is( self.NUMBER ) ):
+                str_buffer += self.next_char()
+
+        if ( self.next_char_is( self.CHARACTER ) ):
+            raise NumberFollowedByCharacter( str_buffer, start_index, self.index )
+        else:
+            return Token( 'NUMBER', str_buffer )
+            
+    def process_identifier( self ):
+        """Process a 'generic' identifier, either raising an error, or returning an identifier Token"""
+        c           = self.cur_char()
+        str_buffer  = c
+        while ( self.next_char_is( self.IDENTIFIER ) ):
+            str_buffer += self.next_char()
+        return Token( 'IDENTIFIER', str_buffer )
