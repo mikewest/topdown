@@ -18,6 +18,12 @@ if __name__ == "__main__":
                                     (
                                         '#id .class', ( Token( 'ID', 'id' ), Token( 'CLASS', 'class' ) )
                                     ),
+                                    (
+                                        '#id, .class', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), Token( 'CLASS', 'class' ) )
+                                    ),
+                                    (
+                                        '#id, .class { }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), Token( 'CLASS', 'class' ), Token('OPERATOR', '{'), Token('OPERATOR', '}') )
+                                    )
                                 ]
         def assertEqualTokens( self, a, b ):
             return self.assertEqual( TokenList( a ), b )
