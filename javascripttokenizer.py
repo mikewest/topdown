@@ -24,35 +24,32 @@ class JavaScriptTokenizer( Tokenizer ):
         
 
     def token_generator( self ):
-### "Constants"
-
-        
 ### Begin processing the string, one character at a time.
         c = self.next_char()
         while ( c is not None ):
 ### 1) Whitespace
-            if self.WHITESPACE.match( c ):
+            if self.cur_char_is( self.WHITESPACE ):
                 pass
                 
 ### 2) Identifier
-            elif self.BEGIN_IDENTIFIER.match( c ):
+            elif self.cur_char_is( self.BEGIN_IDENTIFIER ):
                 yield self.process_identifier()
                 
 ### 3) Number
-            elif self.NUMBER.match( c ):
+            elif self.cur_char_is( self.NUMBER ):
                 yield self.process_literal_number()
 
 ### 4) String
-            elif self.BEGIN_STRING.match( c ):
+            elif self.cur_char_is( self.BEGIN_STRING ):
                 yield self.process_literal_string()
 
 ### 5) One-line Comments (not a token: just throw away)
-            elif self.BEGIN_COMMENT.match( c ) and self.next_char_is( self.BEGIN_COMMENT ):
-                while c is not None and not self.TERMINATOR.match( c ):
+            elif self.cur_char_is( self.BEGIN_COMMENT ) and self.next_char_is( self.BEGIN_COMMENT ):
+                while c is not None and not self.cur_char_is( self.TERMINATOR ):
                     c = self.next_char()
 
 ### 6) Combining prefix/suffix
-            elif self.PREFIX.match( c ):
+            elif self.cur_char_is( self.PREFIX ):
                 str_buffer = c
                 while ( self.next_char_is( self.SUFFIX ) ):
                     str_buffer += self.next_char()

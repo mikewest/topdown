@@ -132,22 +132,36 @@ class Tokenizer( object ):
         self.tokens     =  TokenList()
         
 #
-#   Helper Methods
-#   
-    def get_char( self, x ):
+#   Helper Methods (Private)
+#
+    def __peek( self ):
+        """Return the next character (or None), but don't advance the index."""
+        newIndex = self.index + 1
+        return self.__get_char( newIndex )
+    
+    def __char_is( self, c, char_type ):
+        """Returns true if the given character is not none, and matches the given type"""
+        if c is not None:
+            return char_type.match( c )
+        else:
+            return False
+
+    def __get_char( self, x ):
         if x < self.length:
             return self.original[ x ]
         else:
             return None
-    
+#
+#   Helper Methods (Not so private (used by subclasses))
+#
     def cur_char( self ):
         """Return the current character (or None)."""
-        return self.get_char( self.index )
+        return self.__get_char( self.index )
         
     def next_char( self ):
         """Return the next character (or None), and advance the index."""
         self.index += 1
-        return self.get_char( self.index )
+        return self.__get_char( self.index )
     
     def next_x_chars( self, x = 1 ):
         """Return the next X characters (or None if there aren't enough), and advance the index."""
@@ -158,18 +172,15 @@ class Tokenizer( object ):
         else:
             return None
     
-    def peek( self ):
-        """Return the next character (or None), but don't advance the index."""
-        newIndex = self.index + 1
-        return self.get_char( newIndex )
+    def cur_char_is( self, char_type ):
+        """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
+        c = self.cur_char()
+        return self.__char_is( c, char_type )
             
     def next_char_is( self, char_type ):
         """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
-        c = self.peek()
-        if c is not None:
-            return char_type.match( c )
-        else:
-            return False
+        c = self.__peek()
+        return self.__char_is( c, char_type )
     
     def token_generator( self ):
         pass
@@ -184,7 +195,7 @@ class Tokenizer( object ):
         return self.tokens
         
 #
-#   Generic Tokens
+#   Generic Tokens (can/should be overridden by subclasses)
 #
     def process_literal_string( self ):
         """Process a 'generic' string, either raising an error or retuning a string Token"""
