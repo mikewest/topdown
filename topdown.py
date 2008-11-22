@@ -1,4 +1,5 @@
-from tokenizer import Token, Tokenizer, TokenList
+from tokenizer import Token, TokenList
+from javascripttokenizer import JavaScriptTokenizer
 from tokenexceptions import *
 import unittest
 
@@ -93,50 +94,50 @@ if __name__ == "__main__":
         def assertEqualTokens( self, a, b ):
             return self.assertEqual( TokenList( a ), b )
             
-        def testTokenizerKnownStringValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownStringValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.StringKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result )
                 
-        def testTokenizerKnownNumberValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownNumberValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.NumberKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
                 
-        def testTokenizerKnownOperatorValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownOperatorValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.OperatorKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
                 
-        def testTokenizerKnownIdentifierValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownIdentifierValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.IdentifierKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
                 
-        def testTokenizerKnownComplexValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownComplexValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.ComplexKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
         
-        def testTokenizerKnownCommentValues( self ):
-            """Tokenizer.tokenize should give known result with known input"""
+        def testJavaScriptTokenizerKnownCommentValues( self ):
+            """JavaScriptTokenizer.tokenize should give known result with known input"""
             for string, tokens in self.CommentKnownValues:
-                result = Tokenizer( string ).tokenize()
+                result = JavaScriptTokenizer( string ).tokenize()
                 self.assertEqualTokens( tokens, result ) 
     
     
     class KnownExceptions( unittest.TestCase ):
         def assertTokenizingRaises( self, exception, string ):
-            tokenizer = Tokenizer( string )
+            tokenizer = JavaScriptTokenizer( string )
             return self.assertRaises( exception, tokenizer.tokenize )
         
         def testNumberBadExponent( self ):
-            """Tokenizer.tokenize should raise NumberBadExponent"""
+            """JavaScriptTokenizer.tokenize should raise NumberBadExponent"""
             self.assertTokenizingRaises( NumberBadExponent, '1e')
             self.assertTokenizingRaises( NumberBadExponent, '1ex')
             self.assertTokenizingRaises( NumberBadExponent, '1E')
@@ -147,13 +148,13 @@ if __name__ == "__main__":
             self.assertTokenizingRaises( NumberBadExponent, '1.0eX')
         
         def testNumberFollowedByCharacter( self ):
-            """Tokenizer.tokenize should raise NumberFollowedByCharacter"""
+            """JavaScriptTokenizer.tokenize should raise NumberFollowedByCharacter"""
             self.assertTokenizingRaises( NumberFollowedByCharacter, '1x')
             self.assertTokenizingRaises( NumberFollowedByCharacter, '9000x097')
             self.assertTokenizingRaises( NumberFollowedByCharacter, '12.34fs')
     
         def testUnterminatedString( self ):
-            """Tokenizer.tokenize should raise UnterminatedString"""
+            """JavaScriptTokenizer.tokenize should raise UnterminatedString"""
             self.assertTokenizingRaises( UnterminatedString, '"xxx')
             self.assertTokenizingRaises( UnterminatedString, '\'xxx')
             self.assertTokenizingRaises( UnterminatedString, '\'xxx\n')
