@@ -31,7 +31,7 @@ class CSSTokenizer( Tokenizer ):
         while ( c is not None ):
 ### 1) Whitespace
             if self.cur_char_is( self.WHITESPACE ):
-                pass
+                yield self.process_whitespace()
                 
 ### 2) Identifier
             elif self.cur_char_is( self.BEGIN_CLASS ):
@@ -50,6 +50,11 @@ class CSSTokenizer( Tokenizer ):
 #
 #   Overrides for generic parsers
 #
+    def process_whitespace( self ):
+        while self.next_char_is( self.WHITESPACE ):
+            c = self.next_char()
+        return Token( 'WHITESPACE', None )
+
     def process_identifier( self, identifier_type ):
         # Skip first character; it'll be either '.' or '#', and irrelevant.
         str_buffer  = ''
