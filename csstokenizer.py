@@ -20,8 +20,9 @@ class CSSTokenizer( Tokenizer ):
         Tokenizer.__init__( self, string_to_tokenize )
 
     ### Setup CSSTokenizer-specific regexen
-        self.BEGIN_CLASS    =    re.compile("[\.]")
-        self.BEGIN_ID       =    re.compile("[#]")
+        self.BEGIN_CLASS        =    re.compile("[\.]")
+        self.BEGIN_ID           =    re.compile("[#]")
+        self.BEGIN_PSEUDOCLASS  =    re.compile("[:]")
         
 
     def token_generator( self ):
@@ -37,7 +38,9 @@ class CSSTokenizer( Tokenizer ):
                 yield self.process_identifier( 'CLASS' )
             elif self.cur_char_is( self.BEGIN_ID ):
                 yield self.process_identifier( 'ID' )
-                
+            elif self.cur_char_is( self.BEGIN_PSEUDOCLASS ):
+                yield self.process_identifier( 'PSEUDOCLASS' )
+
 ### Everything Else
             else:
                 yield Token( 'OPERATOR', c )

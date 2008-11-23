@@ -19,19 +19,36 @@ if __name__ == "__main__":
                                         '#id .class', ( Token( 'ID', 'id' ), Token( 'CLASS', 'class' ) )
                                     ),
                                     (
+                                        '#id .class :focus', ( Token( 'ID', 'id' ), Token( 'CLASS', 'class' ), Token( 'PSEUDOCLASS', 'focus' ) )
+                                    ),
+                                    (
+                                        '#id .class:visited', ( Token( 'ID', 'id' ), Token( 'CLASS', 'class' ), Token( 'PSEUDOCLASS', 'visited' ) )
+                                    ),
+                                ]
+
+        ComplexKnownValues  =   [
+                                    (
                                         '#id, .class', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), Token( 'CLASS', 'class' ) )
                                     ),
                                     (
                                         '#id, .class { }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), Token( 'CLASS', 'class' ), Token('OPERATOR', '{'), Token('OPERATOR', '}') )
-                                    )
+                                    ),
+                                    
                                 ]
         def assertEqualTokens( self, a, b ):
             return self.assertEqual( TokenList( a ), b )
             
+        def __loop_through_values( self, the_list ):
+            for string, tokens in the_list:
+                result = CSSTokenizer( string ).tokenize()
+                self.assertEqualTokens( tokens, result )            
+            
         def testCSSTokenizerKnownIdentifierValues( self ):
             """CSSTokenizer.tokenize should give known result with known input"""
-            for string, tokens in self.IdentifierKnownValues:
-                result = CSSTokenizer( string ).tokenize()
-                self.assertEqualTokens( tokens, result )
+            self.__loop_through_values( self.IdentifierKnownValues )
                 
+        def testCSSTokenizerKnownComplexValues( self ):
+            """CSSTokenizer.tokenize should give known result with known input"""
+            self.__loop_through_values( self.ComplexKnownValues )
+            
     unittest.main()
