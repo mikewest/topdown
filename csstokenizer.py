@@ -35,12 +35,14 @@ class CSSTokenizer( Tokenizer ):
                 
 ### 2) Identifier
             elif self.cur_char_is( self.BEGIN_CLASS ):
-                yield self.process_identifier( 'CLASS' )
+                yield self.process_prefixed_identifier( 'CLASS' )
             elif self.cur_char_is( self.BEGIN_ID ):
-                yield self.process_identifier( 'ID' )
+                yield self.process_prefixed_identifier( 'ID' )
             elif self.cur_char_is( self.BEGIN_PSEUDOCLASS ):
-                yield self.process_identifier( 'PSEUDOCLASS' )
-
+                yield self.process_prefixed_identifier( 'PSEUDOCLASS' )
+            elif self.cur_char_is( self.CHARACTER ):
+                yield self.process_identifier( )
+                
 ### Everything Else
             else:
                 yield Token( 'OPERATOR', c )
@@ -55,7 +57,7 @@ class CSSTokenizer( Tokenizer ):
             c = self.next_char()
         return Token( 'WHITESPACE', None )
 
-    def process_identifier( self, identifier_type ):
+    def process_prefixed_identifier( self, identifier_type ):
         # Skip first character; it'll be either '.' or '#', and irrelevant.
         str_buffer  = ''
         while self.next_char_is( self.IDENTIFIER ):

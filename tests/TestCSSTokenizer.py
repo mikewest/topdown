@@ -34,6 +34,9 @@ if __name__ == "__main__":
                                     (
                                         '#id, .class { }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('OPERATOR', '}') )
                                     ),
+                                    (
+                                        '#id, .class { xxx }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('IDENTIFIER', 'xxx'), WHITESPACE, Token('OPERATOR', '}') )
+                                    ),
                                     
                                 ]
         def assertEqualTokens( self, a, b ):
