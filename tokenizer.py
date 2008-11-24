@@ -47,6 +47,10 @@ class TokenList( object ):
         if isinstance( to_append, Token ):
             self.__tokens.append( to_append )
             self.__reset()
+        elif isinstance( to_append, iterable ):
+            for value in to_append:
+                self.__tokens.append( value )
+            self.__reset()
         else:
             raise TypeError
     
