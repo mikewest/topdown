@@ -11,35 +11,37 @@ if __name__ == "__main__":
         WHITESPACE = Token( 'WHITESPACE', None )
         IdentifierKnownValues = [
                                     (
-                                        '#id', Token( 'ID', 'id' )
+                                        '#id', Token( 'SELECTOR', '#id' )
                                     ),
-                                    (
-                                        '.class', Token( 'CLASS', 'class' )
-                                    ),
-                                    (
-                                        '#id .class', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ) )
-                                    ),
-                                    (
-                                        '#id .class :focus', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token( 'PSEUDOCLASS', 'focus' ) )
-                                    ),
-                                    (
-                                        '#id .class:visited', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ), Token( 'PSEUDOCLASS', 'visited' ) )
-                                    ),
+                                    # (
+                                    #     '.class', Token( 'CLASS', 'class' )
+                                    # ),
+                                    # (
+                                    #     '#id .class', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ) )
+                                    # ),
+                                    # (
+                                    #     '#id .class :focus', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token( 'PSEUDOCLASS', 'focus' ) )
+                                    # ),
+                                    # (
+                                    #     '#id .class:visited', ( Token( 'ID', 'id' ), WHITESPACE, Token( 'CLASS', 'class' ), Token( 'PSEUDOCLASS', 'visited' ) )
+                                    # ),
                                 ]
 
         ComplexKnownValues  =   [
-                                    (
-                                        '#id, .class', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ) )
-                                    ),
-                                    (
-                                        '#id, .class { }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('OPERATOR', '}') )
-                                    ),
-                                    (
-                                        '#id, .class { xxx }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('IDENTIFIER', 'xxx'), WHITESPACE, Token('OPERATOR', '}') )
-                                    ),
+                                    # (
+                                    #     '#id, .class', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ) )
+                                    # ),
+                                    # (
+                                    #     '#id, .class { }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('OPERATOR', '}') )
+                                    # ),
+                                    # (
+                                    #     '#id, .class { xxx }', ( Token( 'ID', 'id' ), Token('OPERATOR', ','), WHITESPACE, Token( 'CLASS', 'class' ), WHITESPACE, Token('OPERATOR', '{'), WHITESPACE, Token('IDENTIFIER', 'xxx'), WHITESPACE, Token('OPERATOR', '}') )
+                                    # ),
                                     
                                 ]
         def assertEqualTokens( self, a, b ):
+            print TokenList( a )
+            print b
             return self.assertEqual( TokenList( a ), b )
             
         def __loop_through_values( self, the_list ):
