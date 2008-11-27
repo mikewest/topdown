@@ -20,72 +20,49 @@ class CSSTokenizer( Tokenizer ):
         Tokenizer.__init__( self, string_to_tokenize )
 
     ### Setup CSSTokenizer-specific regexen
-        self.BEGIN_CLASS        =   re.compile("[\.]")
-        self.BEGIN_ID           =   re.compile("[#]")
-        self.BEGIN_PSEUDOCLASS  =   re.compile("[:]")
-        self.BEGIN_SELECTOR     =   re.compile("[*:\[\]\.#]")
-        self.SELECTOR           =   re.compile("[*\[\]\"'~^$|():.#>+a-zA-Z]")
-        self.BEGIN_RULEBLOCK    =   re.compile("[{]")
-        self.END_RULEBLOCK      =   re.compile("[}]")
-        
-
-    def token_generator( self ):
-### Begin processing the string, one character at a time.
-        c = self.next_char()
-        self.__state = 'BASE'
-        while ( c is not None ):
-### 1) Whitespace
-            if self.cur_char_is( self.WHITESPACE ):
-                yield self.process_whitespace()
-            
-### 2) Selector?
-            if self.cur_char_is( self.BEGIN_SELECTOR ):
-                state = 'INSIDE_SELECTOR'
-                yield self.process_selector()
-
-### Everything Else
-            else:
-                yield Token( 'OPERATOR', c )
-            
-            c = self.next_char()
-            
-#
-#   Overrides for generic parsers
-#
-    def process_whitespace( self ):
-        """Group a whitespace block together into either a 'WHITESPACE' Token, or 'DESCENDANT_SELECTOR' Token"""
-        if self.__state == 'BASE':
-            while self.next_char_is( self.WHITESPACE ):
-                c = self.next_char()
-        else:
-            while self.next_char_is( self.WHITESPACE ):
-                c = self.next_char()
-            if not self.next_char_is( self.BEGIN_RULEBLOCK ):
-                return Token( 'DESCENDANT_SELECTOR', None )
-        return Token( 'WHITESPACE', None )
-
-    def process_selector( self ):
-        """Parses a single selector into a list of selector Tokens"""
-        str_buffer = self.cur_char()
-        while self.next_char_is( self.SELECTOR ):
-            str_buffer += self.next_char()
-            
-        return Token( 'SELECTOR', str_buffer )
-# if self.cur_char_is( self.BEGIN_CLASS ):
-#     tokens.append( self.process_prefixed_identifier( 'CLASS' ) )
-# elif self.cur_char_is( self.BEGIN_ID ):
-#     yield self.process_prefixed_identifier( 'ID' )
-# elif self.cur_char_is( self.BEGIN_PSEUDOCLASS ):
-#     yield self.process_prefixed_identifier( 'PSEUDOCLASS' )
-# elif self.cur_char_is( self.CHARACTER ):
-#     yield self.process_identifier( )
-
-    def process_prefixed_identifier( self, identifier_type ):
-        # Skip first character; it'll be either '.' or '#', and irrelevant.
-        str_buffer  = ''
-        while self.next_char_is( self.IDENTIFIER ):
-            str_buffer += self.next_char()
-        if str_buffer is not '':
-            return Token( identifier_type, str_buffer )
-        else:
-            raise MalformedIdentifier( str_buffer, start_index, self.index )
+### Throwing everything away after reading through the CSS spec.
+### I ought be using the specified tokens, so I will.
+# IDENT {ident}
+# ATKEYWORD @{ident}
+# STRING    {string}
+# INVALID   {invalid}
+# HASH  #{name}
+# NUMBER    {num}
+# PERCENTAGE    {num}%
+# DIMENSION {num}{ident}
+# URI   url\({w}{string}{w}\)
+# |url\({w}([!#$%&*-~]|{nonascii}|{escape})*{w}\)
+# UNICODE-RANGE U\+[0-9a-f?]{1,6}(-[0-9a-f]{1,6})?
+# CDO   <!--
+# CDC   -->
+# ; ;
+# { \{
+# } \}
+# ( \(
+# ) \)
+# [ \[
+# ] \]
+# S [ \t\r\n\f]+
+# COMMENT   \/\*[^*]*\*+([^/*][^*]*\*+)*\/
+# FUNCTION  {ident}\(
+# INCLUDES  ~=
+# DASHMATCH |=
+# DELIM any other character not matched by the above rules, and neither a single nor a double quote
+# 
+# 
+# ident [-]?{nmstart}{nmchar}*
+# name  {nmchar}+
+# nmstart   [_a-z]|{nonascii}|{escape}
+# nonascii  [^\0-\177]
+# unicode   \\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?
+# escape    {unicode}|\\[^\n\r\f0-9a-f]
+# nmchar    [_a-z0-9-]|{nonascii}|{escape}
+# num   [0-9]+|[0-9]*\.[0-9]+
+# string    {string1}|{string2}
+# string1   \"([^\n\r\f\\"]|\\{nl}|{escape})*\"
+# string2   \'([^\n\r\f\\']|\\{nl}|{escape})*\'
+# invalid   {invalid1}|{invalid2}
+# invalid1  \"([^\n\r\f\\"]|\\{nl}|{escape})*
+# invalid2  \'([^\n\r\f\\']|\\{nl}|{escape})*
+# nl    \n|\r\n|\r|\f
+# w [ \t\r\n\f]*
