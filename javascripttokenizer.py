@@ -21,8 +21,10 @@ class JavaScriptTokenizer( Tokenizer ):
         self.PREFIX             =   re.compile( "[%s]" % self.prefix )
         self.SUFFIX             =   re.compile( "[%s]" % self.suffix )
         self.BEGIN_IDENTIFIER   =   self.CHARACTER
+        self.MULTILINE_COMMENT  =   re.compile("[\*]")
+        self.END_COMMENT        =   re.compile("[/]")
+        self.ESCAPE             =   re.compile("[\\\\]")
         
-
     def token_generator( self ):
 ### Begin processing the string, one character at a time.
         c = self.next_char()
@@ -44,10 +46,18 @@ class JavaScriptTokenizer( Tokenizer ):
                 yield self.process_literal_string()
 
 ### 5) One-line Comments (not a token: just throw away)
-            elif self.cur_char_is( self.BEGIN_COMMENT ) and self.next_char_is( self.BEGIN_COMMENT ):
+            elif not self.prev_char_is( self.ESCAPE ) and self.cur_char_is( self.BEGIN_COMMENT ) and self.next_char_is( self.BEGIN_COMMENT ):
                 while c is not None and not self.cur_char_is( self.TERMINATOR ):
                     c = self.next_char()
 
+### 5a) Multi-line Comments (not a token, throw these away too)
+            elif not self.prev_char_is( self.ESCAPE ) and self.cur_char_is( self.BEGIN_COMMENT ) and self.next_char_is( self.MULTILINE_COMMENT ):
+                self.next_char()
+                while c is not None and not ( self.cur_char_is( self.MULTILINE_COMMENT) and self.next_char_is( self.END_COMMENT ) ):
+                    c = self.next_char()
+                if self.cur_char_is( self.MULTILINE_COMMENT) and self.next_char_is( self.END_COMMENT ):
+                    c = self.next_char();
+                    
 ### 6) Combining prefix/suffix
             elif self.cur_char_is( self.PREFIX ):
                 str_buffer = c

@@ -149,6 +149,10 @@ class Tokenizer( object ):
         """Return the next character (or None), but don't advance the index."""
         newIndex = self.index + 1
         return self.__get_char( newIndex )
+    def __keep( self ):
+        """Return the previous character (or None), but don't retract the index."""
+        newIndex = self.index - 1
+        return self.__get_char( newIndex )
     
     def __char_is( self, c, char_type ):
         """Returns true if the given character is not none, and matches the given type"""
@@ -191,6 +195,11 @@ class Tokenizer( object ):
     def next_char_is( self, char_type ):
         """Returns true if the next character is of a certain type (e.g. matches a given regex)"""
         c = self.__peek()
+        return self.__char_is( c, char_type )
+    
+    def prev_char_is( self, char_type ):
+        """Returns true if the previous character was of a certain type."""
+        c = self.__keep()
         return self.__char_is( c, char_type )
     
     def token_generator( self ):
