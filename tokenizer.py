@@ -1,4 +1,5 @@
 # encoding: utf-8;
+from __future__ import generators
 import re
 from tokenexceptions import *
 
@@ -47,7 +48,7 @@ class TokenList( object ):
         if isinstance( to_append, Token ):
             self.__tokens.append( to_append )
             self.__reset()
-        elif isinstance( to_append, iterable ):
+        elif isinstance( to_append, (list, tuple) ):
             for value in to_append:
                 self.__tokens.append( value )
             self.__reset()
@@ -78,6 +79,12 @@ class TokenList( object ):
             return self.__tokens[ x ]
         else:
             return None
+    #
+    # Iterable
+    #
+
+    def __iter__(self):
+      return (t for t in self.__tokens)
     #
     #   Equality
     #

@@ -29,4 +29,11 @@ if __name__ == "__main__":
             self.assertEqual( the_tokens[0], tokens.next() )
             self.assertEqual( the_tokens[1], tokens.next() )
 
+        def testTokenListIterability( self ):
+            """TokenList should be iterable"""
+            tokens      = TokenList()
+            the_tokens  = [ Token( 'IDENTIFIER', 'first'), Token( 'IDENTIFIER', 'second' ) ]
+            tokens.append( the_tokens )
+            for token in tokens:
+                self.assertEqual( token, tokens.next() )
     unittest.main()
