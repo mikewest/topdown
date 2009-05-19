@@ -10,48 +10,48 @@ if __name__ == "__main__":
     class KnownValues( unittest.TestCase ):
         StringKnownValues = [
                                 (
-                                    '"xx\\\"x"', Token( 'STRING', 'xx\\"x' )
+                                    '"xx\\\"x"', Token( '(STRING)', 'xx\\"x' )
                                 ),
                                 (
-                                    '"xx\\\"x"', Token( 'STRING', 'xx\\"x' )
+                                    '"xx\\\"x"', Token( '(STRING)', 'xx\\"x' )
                                 ),
                                 (
-                                    '"xxx"', Token( 'STRING', 'xxx' )
+                                    '"xxx"', Token( '(STRING)', 'xxx' )
                                 )
                             ]
         NumberKnownValues = [
                                 (
-                                    '1', Token( 'NUMBER', '1' )
+                                    '1', Token( '(NUMBER)', '1' )
                                 ),
                                 (
-                                    '1E10', Token( 'NUMBER', '1E10')
+                                    '1E10', Token( '(NUMBER)', '1E10')
                                 ),
                                 (
-                                    '1E+10', Token( 'NUMBER', '1E+10')
+                                    '1E+10', Token( '(NUMBER)', '1E+10')
                                 ),
                                 (
-                                    '1.32189E-10', Token( 'NUMBER', '1.32189E-10')
+                                    '1.32189E-10', Token( '(NUMBER)', '1.32189E-10')
                                 ),
                             ]
         OperatorKnownValues =   [
-                                    ( '+', Token( 'OPERATOR', '+' ) ),
-                                    ( '!', Token( 'OPERATOR', '!' ) ),
-                                    ( '=', Token( 'OPERATOR', '=' ) ),
-                                    ( '==', Token( 'OPERATOR', '==' ) ),
-                                    ( '===', Token( 'OPERATOR', '===' ) ),
-                                    ( '+&', Token( 'OPERATOR', '+&' ) )
+                                    ( '+', Token( '(OPERATOR)', '+' ) ),
+                                    ( '!', Token( '(OPERATOR)', '!' ) ),
+                                    ( '=', Token( '(OPERATOR)', '=' ) ),
+                                    ( '==', Token( '(OPERATOR)', '==' ) ),
+                                    ( '===', Token( '(OPERATOR)', '===' ) ),
+                                    ( '+&', Token( '(OPERATOR)', '+&' ) )
                                 ]
         
         
         IdentifierKnownValues = [
                                     (
-                                        'identifier', Token( 'IDENTIFIER', 'identifier' )
+                                        'identifier', Token( '(IDENTIFIER)', 'identifier' )
                                     ),
                                     (
-                                        'identifier01', Token( 'IDENTIFIER', 'identifier01' )
+                                        'identifier01', Token( '(IDENTIFIER)', 'identifier01' )
                                     ),
                                     (
-                                        'ide_ntifi_er01', Token( 'IDENTIFIER', 'ide_ntifi_er01' )
+                                        'ide_ntifi_er01', Token( '(IDENTIFIER)', 'ide_ntifi_er01' )
                                     )
                                 ]
         CommentKnownValues  =   [
@@ -68,29 +68,29 @@ if __name__ == "__main__":
         ComplexKnownValues  =   [
                                     (
                                         '1+1',
-                                        ( Token('NUMBER', '1'), Token( 'OPERATOR', '+' ), Token( 'NUMBER', '1' ) )
+                                        ( Token('(NUMBER)', '1'), Token( '(OPERATOR)', '+' ), Token( '(NUMBER)', '1' ) )
                                     ),
                                     (
                                         ' 1 + 1 ',
-                                        ( Token('NUMBER', '1'), Token( 'OPERATOR', '+' ), Token( 'NUMBER', '1' ) )
+                                        ( Token('(NUMBER)', '1'), Token( '(OPERATOR)', '+' ), Token( '(NUMBER)', '1' ) )
                                     ),
                                     (
                                         'identifier + 1E10',
-                                        ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                                        ( Token( '(IDENTIFIER)', 'identifier' ), Token( '(OPERATOR)', '+' ), Token('(NUMBER)', '1E10' ) )
                                     ),
                                     (
                                         'identifier +// \n 1E10',
-                                        ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                                        ( Token( '(IDENTIFIER)', 'identifier' ), Token( '(OPERATOR)', '+' ), Token('(NUMBER)', '1E10' ) )
                                     ),
                                     (
                                         'identifier +//\r\n 1E10',
-                                        ( Token( 'IDENTIFIER', 'identifier' ), Token( 'OPERATOR', '+' ), Token('NUMBER', '1E10' ) )
+                                        ( Token( '(IDENTIFIER)', 'identifier' ), Token( '(OPERATOR)', '+' ), Token('(NUMBER)', '1E10' ) )
                                     ),
                                     (
-                                        '1// this is a comment', Token( 'NUMBER', '1')
+                                        '1// this is a comment', Token( '(NUMBER)', '1')
                                     ),
                                     (
-                                        '1// this is a comment\n1', ( Token( 'NUMBER', '1'), Token( 'NUMBER', '1'), )
+                                        '1// this is a comment\n1', ( Token( '(NUMBER)', '1'), Token( '(NUMBER)', '1'), )
                                     ),
                                 ]
                                 

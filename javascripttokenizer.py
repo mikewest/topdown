@@ -63,10 +63,10 @@ class JavaScriptTokenizer( Tokenizer ):
                 str_buffer = c
                 while ( self.next_char_is( self.SUFFIX ) ):
                     str_buffer += self.next_char()
-                yield Token( 'OPERATOR', str_buffer )
+                yield Token( '(OPERATOR)', str_buffer )
 
 ### Everything Else
             else:
-                yield Token( 'OPERATOR', c )
+                yield Token( '(OPERATOR)', c )
                 
             c = self.next_char()

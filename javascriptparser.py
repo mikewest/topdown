@@ -13,8 +13,8 @@ class SymbolBase( object ):
     raise SyntaxError( 'Unknown Operator ( %r )' % self.id )
   
   def __repr__( self ):
-    if self.id == "NUMBER" or self.id == "STRING" or self.id == "IDENTIFIER":
-      return "(%s %s)" % ( self.id, self.value )
+    if self.id == "(NUMBER)" or self.id == "(STRING)" or self.id == "(IDENTIFIER)":
+      return "(%s %s)" % ( self.id[ 1:-1 ], self.value )
     out = [ self.id, self.first, self.second, self.third ]
     out = map( str, filter( None, out ) )
     return "(" + " ".join( out ) + ")"
@@ -24,15 +24,103 @@ class SymbolTable( object ):
     self._table   = {}
     self._parser  = parser
     
-    ### Generate symbols
-    self.infix( '+', 10 )
-    self.infix( '-', 10 )
-    self.infix( '/', 20 )
-    self.infix( '*', 20 )
-    self.literal( 'NUMBER' )
-    self.literal( 'STRING' )
-    self.literal( 'IDENTIFIER' )
-    self.new_symbol( 'END' )
+### Generate operator symbols
+    
+    #####################################################################(150)
+    # call, member
+    self.infix(   '.',    150 )
+    self.infix(   '(',    150 )
+    self.infix(   '[',    150 )
+    
+    #####################################################################(140)
+    # negation/increment
+    self.prefix(  '++',   140 )  # Pre-increment
+    self.prefix(  '--',   140 )  # Pre-decrement
+    self.prefix(  '!',    140 )  # Boolean negation
+    self.prefix(  '~',    140 )  # Bitwise complement
+    self.prefix(  '-',    140 )  # Unary negation
+    self.prefix(  '+',    140 )  # Unary posation (not a word.  :) )
+    
+    #####################################################################(130)
+    # multiply/divide
+    self.infix(   '*',    130 )  # Multiplication
+    self.infix(   '/',    130 )  # Division
+    self.infix(   '%',    130 )  # Modulus
+    
+    #####################################################################(120)
+    # addition/subtraction
+    self.infix(   '+',    120 )  # Addition
+    self.infix(   '-',    120 )  # Subtraction
+    
+    #####################################################################(110)
+    # bitwise shift
+    self.infix(   '<<',   110 )  # left shift
+    self.infix(   '>>',   110 )  # right shift
+    self.infix(   '>>>',  110 )  # right shift, zero filled
+    
+    #####################################################################(100)
+    # relational
+    self.infix(   '<',    100 )  # less than
+    self.infix(   '>',    100 )  # greater than
+    self.infix(   '<=',   100 )  # less than or equal to
+    self.infix(   '>=',   100 )  # greater than or equal to
+    
+    #####################################################################( 90)
+    # equality
+    self.infix(   '==',   90  ) # equal to
+    self.infix(   '!=',   90  ) # not equal to
+    self.infix(   '===',  90  ) # strictly equal to
+    self.infix(   '!==',  90  ) # not strictly equal to
+    
+    #####################################################################( 80)
+    # bitwise and
+    self.infix(   '&',    80  ) # bitwise and
+    
+    #####################################################################( 70)
+    # bitwise xor ^
+    self.infix(   '^',    70  ) # bitwise xor
+    
+    #####################################################################( 60)
+    # bitwise or  |
+    self.infix(   '|',    60  ) # bitwise or
+    
+    #####################################################################( 50)
+    # logical and &&
+    self.infix(   '&&',   50  ) # logical and
+    
+    #####################################################################( 40)
+    # logical or  ||
+    self.infix(   '||',   40  ) # logical or
+    
+    #####################################################################( 30)
+    # conditional ?:
+
+    #####################################################################( 20)
+    # assignment  = += -= *= /= %= <<= >>= >>>= &= ^= |=
+    self.infix(   '=',    20  ) # simple assignment
+    self.infix(   '+=',   20  ) # addition assignment
+    self.infix(   '-=',   20  ) # subtraction assignment
+    self.infix(   '*=',   20  ) # multiplication assignment
+    self.infix(   '/=',   20  ) # division assignment
+    self.infix(   '<<=',  20  ) # left shifty assignment
+    self.infix(   '>>=',  20  ) # right shifty assignment
+    self.infix(   '>>>=', 20  ) # right shifty assignment with zero fill
+    self.infix(   '&=',   20  ) # bitwise and assignment
+    self.infix(   '^=',   20  ) # bitwise xor assignment
+    self.infix(   '|=',   20  ) # bitwise or assignment
+    
+    #####################################################################( 10)
+    # statement seperators
+    self.infix(   ',',    10  ) # comma
+    
+### Generate literal symbols
+    self.literal( '(NUMBER)' )
+    self.literal( '(STRING)' )
+    self.literal( '(IDENTIFIER)' )
+
+### End!
+    self.new_symbol( ';' )
+    self.new_symbol( '(END)' )
   
   def get( self, id ):
     return self._table[ id ]
@@ -96,8 +184,8 @@ class JavaScriptParser( object ):
       t = self.tokens.next()
       s = None
       if t is None:
-        s = self.symbols.get( 'END' )()
-      elif t.type is 'OPERATOR':
+        s = self.symbols.get( '(END)' )()
+      elif t.type == '(OPERATOR)':
         s = self.symbols.get( t.value )()
       else:
         s = self.symbols.get( t.type )()

@@ -236,7 +236,7 @@ class Tokenizer( object ):
             
     ### Closing Quote?
             if ( c == quote_char ):
-                return Token( 'STRING', str_buffer )
+                return Token( '(STRING)', str_buffer )
                 break
             
     ### Ok, then.
@@ -302,7 +302,7 @@ class Tokenizer( object ):
         if ( self.next_char_is( self.CHARACTER ) ):
             raise NumberFollowedByCharacter( str_buffer, start_index, self.index )
         else:
-            return Token( 'NUMBER', str_buffer )
+            return Token( '(NUMBER)', str_buffer )
             
     def process_identifier( self ):
         """Process a 'generic' identifier, either raising an error, or returning an identifier Token"""
@@ -310,4 +310,4 @@ class Tokenizer( object ):
         str_buffer  = c
         while ( self.next_char_is( self.IDENTIFIER ) ):
             str_buffer += self.next_char()
-        return Token( 'IDENTIFIER', str_buffer )
+        return Token( '(IDENTIFIER)', str_buffer )
