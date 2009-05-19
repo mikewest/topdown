@@ -28,9 +28,27 @@ class SymbolTable( object ):
     
     #####################################################################(150)
     # call, member
-    self.infix(   '.',    150 )
-    self.infix(   '(',    150 )
-    self.infix(   '[',    150 )
+    def led( self, left ):
+      self.first  = left
+      if parser.current_symbol.type != '(IDENTIFIER)':
+        raise SyntaxError( 'Expected identifier, got `%r`' % parser.current_symbol )
+      self.second = parser.current_symbol
+      parser.next()
+      return self
+    self.infix(   '.',    150, led=led )
+    
+    def led( self, left ):
+      self.first  = left
+      self.second = parser.expression()
+      parser.next( ']' )
+      return self
+    self.infix(   '[',    150, led=led )
+    
+    def nud( self ):
+      expr = parser.expression()
+      parser.next( ')' )
+      return expr
+    self.new_symbol(  '(',    150, nud=nud )
     
     #####################################################################(140)
     # negation/increment
@@ -216,9 +234,11 @@ class JavaScriptParser( object ):
         s = self.symbols.get( '(END)' )()
       elif t.type == '(OPERATOR)':
         s = self.symbols.get( t.value )()
+        s.type  = t.type
       else:
-        s = self.symbols.get( t.type )()
+        s       = self.symbols.get( t.type )()
         s.value = t.value
+        s.type  = t.type
       self.current_symbol = s
 
 #
@@ -226,8 +246,8 @@ class JavaScriptParser( object ):
 #
     def expression( self, right_binding_power = 0 ):
         symbol              = self.current_symbol
-        left                = symbol.nud()
         self.next()
+        left                = symbol.nud()
         while right_binding_power < self.current_symbol.lbp:
             symbol              = self.current_symbol
             self.next()
