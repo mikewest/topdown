@@ -94,6 +94,14 @@ class SymbolTable( object ):
     
     #####################################################################( 30)
     # conditional ?:
+    def led( self, left ):
+      self.first  = left
+      self.second = parser.expression( 0 )
+      parser.next( ':' )
+      self.third  = parser.expression( 0 )
+      return self
+    self.new_symbol( '?', 30, led=led )
+    
 
     #####################################################################( 20)
     # assignment  = += -= *= /= %= <<= >>= >>>= &= ^= |=
@@ -110,8 +118,15 @@ class SymbolTable( object ):
     self.infix(   '|=',   20  ) # bitwise or assignment
     
     #####################################################################( 10)
-    # statement seperators
+    # statement seperators, closers
     self.infix(   ',',    10  ) # comma
+    self.new_symbol( ';' )
+    self.new_symbol( ':' )
+    self.new_symbol( '}' )
+    self.new_symbol( ')' )
+    self.new_symbol( ']' )
+    self.new_symbol( 'else' )
+    
     
 ### Generate literal symbols
     self.literal( '(NUMBER)' )
@@ -125,7 +140,7 @@ class SymbolTable( object ):
   def get( self, id ):
     return self._table[ id ]
   
-  def new_symbol( self, id, bp = 0 ):
+  def new_symbol( self, id, bp = 0, nud = None, led = None ):
     try:
       s = self._table[ id ]
     except KeyError:
@@ -137,38 +152,49 @@ class SymbolTable( object ):
       self._table[ id ] = s
     else:
       s.lbp      = max( bp, s.lbp )
+    
+    if nud is not None:
+      s.nud = nud
+    if led is not None:
+      s.led = led
+    
     return s
   #
   #   Helpers for known types of Symbols
   #
-  def infix( self, id, bp ):      # Left associative infix operators ( +, -, *, etc. )
-    p = self._parser
-    def led( self, left ):
-      self.first  = left
-      self.second = p.expression( bp )
-      return self
-    self.new_symbol( id, bp ).led = led
+  def infix( self, id, bp, nud=None, led=None ):      # Left associative infix operators ( +, -, *, etc. )
+    if led is None:
+      p = self._parser
+      if led is None:
+        def led( self, left ):
+          self.first  = left
+          self.second = p.expression( bp )
+          return self
+    self.new_symbol( id, bp, nud, led )
   
-  def prefix( self, id, bp ):     # Prefix operators (!, +, -, etc.)
-    p = self._parser
-    def nud( self ):
-      self.first  = p.expression( bp )
-      self.second = None
-      return self
-    self.new_symbol( id, bp ).nud = nud
+  def prefix( self, id, bp, nud=None, led=None ):     # Prefix operators (!, +, -, etc.)
+    if nud is None:
+      p = self._parser
+      def nud( self ):
+        self.first  = p.expression( bp )
+        self.second = None
+        return self
+    self.new_symbol( id, bp, nud, led )
   
-  def infix_r( self, id, bp ):    # Right associative infix operators
-    p = self._parser
-    def led( self, left ):
-      self.first  = left
-      self.second = p.expression( bp - 1 )
-      return self
-    self.new_symbol( id, bp ).led = led
+  def infix_r( self, id, bp, nud=None, led=None ):    # Right associative infix operators
+    if led is None:
+      p = self._parser
+      def led( self, left ):
+        self.first  = left
+        self.second = p.expression( bp - 1 )
+        return self
+    self.new_symbol( id, bp, nud, led )
   
-  def literal( self, id ):    # Literals (strings, numbers, etc)
-    def nud( self ):
-      return self
-    self.new_symbol( id ).nud = nud
+  def literal( self, id, nud=None, led=None  ):    # Literals (strings, numbers, etc)
+    if nud is None:
+      def nud( self ):
+        return self
+    self.new_symbol( id, 0, nud, led )
 
 class JavaScriptParser( object ):
     def __init__( self, string_to_parse ):
@@ -180,7 +206,10 @@ class JavaScriptParser( object ):
 #
 #   Grab the next token, convert it to a symbol
 #
-    def next( self ):
+    def next( self, id = None ):
+      if ( id is not None and self.current_symbol.id != id ):
+        raise SyntaxError( 'Expected `%r`, got `%r`' % ( id, self.current_symbol.id ) )
+      
       t = self.tokens.next()
       s = None
       if t is None:
@@ -212,7 +241,7 @@ if __name__ == "__main__":
     print "Parser:"
     print "======="
     print
-    p = JavaScriptParser('1 * 1')
+    p = JavaScriptParser('1 ; 1 ;')
     
     print "Parse Tree:"
     print "-----------"
