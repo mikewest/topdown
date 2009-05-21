@@ -15,7 +15,7 @@ class SymbolBase( object ):
   def __repr__( self ):
     if self.id == "(NUMBER)" or self.id == "(STRING)" or self.id == "(IDENTIFIER)":
       return "(%s %s)" % ( self.id[ 1:-1 ], self.value )
-    out = [ self.id, self.first, self.second, self.third ]
+    out = [ '`%s`' % self.id, self.first, self.second, self.third ]
     out = map( str, filter( None, out ) )
     return "(" + " ".join( out ) + ")"
   
@@ -48,7 +48,19 @@ class SymbolTable( object ):
       expr = parser.expression()
       parser.next( ')' )
       return expr
-    self.new_symbol(  '(',    150, nud=nud )
+    def led( self, left ):
+      self.first  = left
+      self.second = []
+      if parser.current_symbol.id != ')':
+        while 1:
+          self.second.append( parser.expression( 10 ) ) # "," has a bp of 10
+          if ( parser.current_symbol.id != ',' ):
+            break
+          parser.next( ',' )
+      parser.next( ')' )
+      return self
+
+    self.new_symbol(  '(',    150, nud=nud, led=led )
     
     #####################################################################(140)
     # negation/increment

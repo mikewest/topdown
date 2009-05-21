@@ -11,104 +11,123 @@ class KnownExpressionValues( unittest.TestCase ):
   
   SimpleKnownValues = [
                         (
-                          '1+2', '(+ (NUMBER 1) (NUMBER 2))'
+                          '1+2', '(`+` (NUMBER 1) (NUMBER 2))'
                         ),
                         (
-                          '1-2', '(- (NUMBER 1) (NUMBER 2))'
+                          '1-2', '(`-` (NUMBER 1) (NUMBER 2))'
                         ),
                         (
-                          '1*2', '(* (NUMBER 1) (NUMBER 2))'
+                          '1*2', '(`*` (NUMBER 1) (NUMBER 2))'
                         ),
                         (
-                          '1/2', '(/ (NUMBER 1) (NUMBER 2))'
+                          '1/2', '(`/` (NUMBER 1) (NUMBER 2))'
                         ),
                         (
-                          '1+2*3', '(+ (NUMBER 1) (* (NUMBER 2) (NUMBER 3)))'
+                          '1+2*3', '(`+` (NUMBER 1) (`*` (NUMBER 2) (NUMBER 3)))'
                         ),
                         (
-                          '1+2/3', '(+ (NUMBER 1) (/ (NUMBER 2) (NUMBER 3)))'
+                          '1+2/3', '(`+` (NUMBER 1) (`/` (NUMBER 2) (NUMBER 3)))'
                         ),
                         (
-                          '1*2/3', '(/ (* (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
+                          '1*2/3', '(`/` (`*` (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
                         )
                       ]
   BitwiseKnownValues  = [
                           (
-                            '1&2', '(& (NUMBER 1) (NUMBER 2))'
+                            '1&2', '(`&` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1^2', '(^ (NUMBER 1) (NUMBER 2))'
+                            '1^2', '(`^` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1|2', '(| (NUMBER 1) (NUMBER 2))'
+                            '1|2', '(`|` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1&&2', '(&& (NUMBER 1) (NUMBER 2))'
+                            '1&&2', '(`&&` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1||2', '(|| (NUMBER 1) (NUMBER 2))'
+                            '1||2', '(`||` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1>>2', '(>> (NUMBER 1) (NUMBER 2))'
+                            '1>>2', '(`>>` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1<<2', '(<< (NUMBER 1) (NUMBER 2))'
+                            '1<<2', '(`<<` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1>>>2', '(>>> (NUMBER 1) (NUMBER 2))'
+                            '1>>>2', '(`>>>` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '1&2>>3', '(& (NUMBER 1) (>> (NUMBER 2) (NUMBER 3)))'
+                            '1&2>>3', '(`&` (NUMBER 1) (`>>` (NUMBER 2) (NUMBER 3)))'
                           ),
                           (
-                            '1>>>2|3>>4', '(| (>>> (NUMBER 1) (NUMBER 2)) (>> (NUMBER 3) (NUMBER 4)))'
+                            '1>>>2|3>>4', '(`|` (`>>>` (NUMBER 1) (NUMBER 2)) (`>>` (NUMBER 3) (NUMBER 4)))'
                           ),
                           (
-                            '1&&2|3>>4', '(&& (NUMBER 1) (| (NUMBER 2) (>> (NUMBER 3) (NUMBER 4))))'
+                            '1&&2|3>>4', '(`&&` (NUMBER 1) (`|` (NUMBER 2) (`>>` (NUMBER 3) (NUMBER 4))))'
                           ),
                           (
-                            '1<<2^3||4', '(|| (^ (<< (NUMBER 1) (NUMBER 2)) (NUMBER 3)) (NUMBER 4))'
+                            '1<<2^3||4', '(`||` (`^` (`<<` (NUMBER 1) (NUMBER 2)) (NUMBER 3)) (NUMBER 4))'
                           ),
                         ]
   TernaryKnownValues  = [
                           (
-                            '1?2:3',      '(? (NUMBER 1) (NUMBER 2) (NUMBER 3))'
+                            '1?2:3',      '(`?` (NUMBER 1) (NUMBER 2) (NUMBER 3))'
                           ),
                           (
-                            '1?2:3>>4',   '(? (NUMBER 1) (NUMBER 2) (>> (NUMBER 3) (NUMBER 4)))'
+                            '1?2:3>>4',   '(`?` (NUMBER 1) (NUMBER 2) (`>>` (NUMBER 3) (NUMBER 4)))'
                           ),
                           (
-                            '1?2+3:4*5',  '(? (NUMBER 1) (+ (NUMBER 2) (NUMBER 3)) (* (NUMBER 4) (NUMBER 5)))'
+                            '1?2+3:4*5',  '(`?` (NUMBER 1) (`+` (NUMBER 2) (NUMBER 3)) (`*` (NUMBER 4) (NUMBER 5)))'
                           ),
                         ]
   ParenKnownValues    = [
                           (
-                            '(1+2)',  '(+ (NUMBER 1) (NUMBER 2))'
+                            '(1+2)',  '(`+` (NUMBER 1) (NUMBER 2))'
                           ),
                           (
-                            '(1+2)*3', '(* (+ (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
+                            '(1+2)*3', '(`*` (`+` (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
                           ),
                           (
-                            '(1+2)/3', '(/ (+ (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
+                            '(1+2)/3', '(`/` (`+` (NUMBER 1) (NUMBER 2)) (NUMBER 3))'
                           ),
                           (
-                            '1*(2/3)', '(* (NUMBER 1) (/ (NUMBER 2) (NUMBER 3)))'
+                            '1*(2/3)', '(`*` (NUMBER 1) (`/` (NUMBER 2) (NUMBER 3)))'
+                          ),
+                          (
+                            'a(b)',    '(`(` (IDENTIFIER a) [(IDENTIFIER b)])'
+                          ),
+                          (
+                            'a(b,c,d)',    '(`(` (IDENTIFIER a) [(IDENTIFIER b), (IDENTIFIER c), (IDENTIFIER d)])'
                           )
                         ]
   CallKnownValues     = [
                           (
-                            'a.b',              '(. (IDENTIFIER a) (IDENTIFIER b))'
+                            'a.b',              '(`.` (IDENTIFIER a) (IDENTIFIER b))'
                           ),
                           (
-                            'a.b.c.d',          '(. (. (. (IDENTIFIER a) (IDENTIFIER b)) (IDENTIFIER c)) (IDENTIFIER d))'
+                            'a.b(c)',           '(`(` (`.` (IDENTIFIER a) (IDENTIFIER b)) [(IDENTIFIER c)])'
                           ),
                           (
-                            'a["b"]',           '([ (IDENTIFIER a) (STRING b))'
+                            'a.b.c.d',          '(`.` (`.` (`.` (IDENTIFIER a) (IDENTIFIER b)) (IDENTIFIER c)) (IDENTIFIER d))'
                           ),
                           (
-                            'a[ 1 + 2 + "b" ]', '([ (IDENTIFIER a) (+ (NUMBER 1) (+ (NUMBER 2) (STRING b))))'
+                            'a["b"]',           '(`[` (IDENTIFIER a) (STRING b))'
                           ),
-                          
+                          (
+                            'a["b"]["c"]',      '(`[` (`[` (IDENTIFIER a) (STRING b)) (STRING c))'
+                          ),
+                          (
+                            'a["b"](c)',        '(`(` (`[` (IDENTIFIER a) (STRING b)) [(IDENTIFIER c)])'
+                          ),
+                          (
+                            'a[ 1 + 2 + "b" ]', '(`[` (IDENTIFIER a) (`+` (NUMBER 1) (`+` (NUMBER 2) (STRING b))))'
+                          ),
+                          (
+                            ### Thanks to jQuery for this appalling example
+                            'e[ val == "toggle" ? hidden ? "show" : "hide" : val ]', '(`[` (IDENTIFIER e) (`?` (`==` (IDENTIFIER val) (STRING toggle)) (`?` (IDENTIFIER hidden) (STRING show) (STRING hide)) (IDENTIFIER val)))'
+                          )
+        
                         ]
   def testJavaScriptParserKnownSimpleValues( self ):
     """Parser.parse_tree should give known result with known input"""
