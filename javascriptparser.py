@@ -59,8 +59,22 @@ class SymbolTable( object ):
           parser.next( ',' )
       parser.next( ')' )
       return self
-
     self.new_symbol(  '(',    150, nud=nud, led=led )
+    
+    def nud( self ):
+      self.first  = []
+      if parser.current_symbol.id != '}':
+        while 1:
+          a = parser.expression( 10 )
+          parser.next( ':' )
+          b = parser.expression( 10 )
+          self.first.append( ( a, b ) )
+          if ( parser.current_symbol.id != ',' ):
+            break
+          parser.next( ',' )
+      parser.next( '}' )
+      return self
+    self.new_symbol(  '{', 150, nud=nud )
     
     #####################################################################(140)
     # negation/increment
