@@ -15,6 +15,8 @@ class SymbolBase( object ):
   def __repr__( self ):
     if self.id == "(NUMBER)" or self.id == "(STRING)" or self.id == "(IDENTIFIER)":
       return "(%s %s)" % ( self.id[ 1:-1 ], self.value )
+    elif self.id == "(OBJECT)":
+      return "(%s %s)" % ( self.id[ 1:-1 ], self.first )
     out = [ '`%s`' % self.id, self.first, self.second, self.third ]
     out = map( str, filter( None, out ) )
     return "(" + " ".join( out ) + ")"
@@ -62,6 +64,7 @@ class SymbolTable( object ):
     self.new_symbol(  '(',    150, nud=nud, led=led )
     
     def nud( self ):
+      self.id     = '(OBJECT)'
       self.first  = []
       if parser.current_symbol.id != '}':
         while 1:

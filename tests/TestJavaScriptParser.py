@@ -128,15 +128,15 @@ class KnownExpressionValues( unittest.TestCase ):
                             'e[ val == "toggle" ? hidden ? "show" : "hide" : val ]( param )', '(`(` (`[` (IDENTIFIER e) (`?` (`==` (IDENTIFIER val) (STRING toggle)) (`?` (IDENTIFIER hidden) (STRING show) (STRING hide)) (IDENTIFIER val))) [(IDENTIFIER param)])'
                           )
                         ]
-  JSONKnownValues     = [
+  ObjectKnownValues   = [
                           (
-                            '{"a": "b"}',           '(`{` [((STRING a), (STRING b))])'
+                            '{"a": "b"}',           '(OBJECT [((STRING a), (STRING b))])'
                           ),
                           (
-                            '{"a": "b", "c": "d"}', '(`{` [((STRING a), (STRING b)), ((STRING c), (STRING d))])'
+                            '{"a": "b", "c": "d"}', '(OBJECT [((STRING a), (STRING b)), ((STRING c), (STRING d))])'
                           ),
                           (
-                            '{"a": "b", "c": {"d": "e"}}', '(`{` [((STRING a), (STRING b)), ((STRING c), (`{` [((STRING d), (STRING e))]))])'
+                            '{"a": "b", "c": {"d": "e"}}', '(OBJECT [((STRING a), (STRING b)), ((STRING c), (`{` [((STRING d), (STRING e))]))])'
                           ),
                         ]
   def testJavaScriptParserKnownSimpleValues( self ):
@@ -169,9 +169,9 @@ class KnownExpressionValues( unittest.TestCase ):
       result = JavaScriptParser( string ).parse_tree
       self.assertEqualTree( tree, result )
 
-  def testJavaScriptParserKnownJSONValues( self ):
-    """Parser.parse_tree should give known result with known JSON structures"""
-    for string, tree in self.JSONKnownValues:
+  def testJavaScriptParserKnownObjectValues( self ):
+    """Parser.parse_tree should give known result with known object literal structures"""
+    for string, tree in self.ObjectKnownValues:
       result = JavaScriptParser( string ).parse_tree
       self.assertEqualTree( tree, result )
       
